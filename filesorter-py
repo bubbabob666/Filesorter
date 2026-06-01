@@ -1,0 +1,49 @@
+import os
+import shutil
+from pathlib import Path
+
+# Definiere, welche Dateiendungen in welche Ordner sollen
+FILE_TYPES = {
+    ".pdf": "Dokumente",
+    ".docx": "Dokumente",
+    ".txt": "Dokumente",
+    ".jpg": "Bilder",
+    ".png": "Bilder",
+    ".mp4": "Videos",
+    ".zip": "Archive"
+}
+
+def organize_folder(folder_path):
+    # Pfad als Path-Objekt definieren
+    base_path = Path(folder_path)
+    
+    # Prüfen, ob der Ordner existiert
+    if not base_path.exists():
+        print("Der angegebene Pfad existiert nicht!")
+        return
+
+    # Alle Dateien im Ordner durchlaufen
+    for file in base_path.iterdir():
+        # Wir wollen nur Dateien, keine Ordner verschieben
+        if file.is_file():
+            # Endung bestimmen (z.B. .pdf)
+            suffix = file.suffix.lower()
+            
+            # Zielordner basierend auf der Endung bestimmen
+            folder_name = FILE_TYPES.get(suffix, "Sonstiges")
+            target_folder = base_path / folder_name
+            
+            # Zielordner erstellen, falls er nicht existiert
+            target_folder.mkdir(exist_ok=True)
+            
+            # Datei verschieben
+            try:
+                shutil.move(str(file), str(target_folder / file.name))
+                print(f"Verschoben: {file.name} -> {folder_name}/")
+            except Exception as e:
+                print(f"Fehler bei {file.name}: {e}")
+
+if __name__ == "__main__":
+    # Hier kannst du den Pfad zum Test-Ordner eingeben
+    path_to_organize = input("Gib den Pfad zum Ordner ein, den ich aufräumen soll: ")
+    organize_folder(path_to_organize)
