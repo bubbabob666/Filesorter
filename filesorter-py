@@ -1,0 +1,38 @@
+import shutil
+from pathlib import Path
+
+FILE_TYPES = {
+    ".pdf": "Dokumente",
+    ".docx": "Dokumente",
+    ".txt": "Dokumente",
+    ".jpg": "Bilder",
+    ".png": "Bilder",
+    ".mp4": "Videos",
+    ".zip": "Archive"
+}
+
+def organize_folder(folder_path):
+    base_path = Path(folder_path)
+    
+    if not base_path.exists():
+        print("Der Pfad existiert nicht")
+        return
+
+    for file in base_path.iterdir():
+        if file.is_file():
+            suffix = file.suffix.lower()
+            
+            folder_name = FILE_TYPES.get(suffix, "Sonstiges")
+            target_folder = base_path / folder_name
+            
+            target_folder.mkdir(exist_ok=True)
+            
+            try:
+                shutil.move(str(file), str(target_folder / file.name))
+                print(f"Verschoben: {file.name} -> {folder_name}/")
+            except Exception as e:
+                print(f"Fehler bei {file.name}: {e}")
+
+if __name__ == "__main__":
+    path_to_organize = input("Gib den Pfad zum Ordner ein, der aufgeräumt werden soll: ")
+    organize_folder(path_to_organize)
